@@ -1,0 +1,55 @@
+default_install_hook_types: [pre-commit, commit-msg]
+default_stages: [pre-commit]
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.6
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: local
+    hooks:
+      - id: uv-export-audit
+        name: exporta dependências travadas para auditoria
+        entry: uv export --format requirements.txt --no-hashes --no-emit-project --quiet --output-file requirements-audit.txt
+        language: system
+        pass_filenames: false
+        always_run: true
+
+  - repo: https://github.com/pypa/pip-audit
+    rev: v2.10.1
+    hooks:
+      - id: pip-audit
+        args: ["-r", "requirements-audit.txt", "--no-deps", "--disable-pip"]
+        always_run: true
+
+  - repo: https://github.com/compilerla/conventional-pre-commit
+    rev: v4.5.0
+    hooks:
+      - id: conventional-pre-commit
+        stages: [commit-msg]
+
+  - repo: local
+    hooks:
+      - id: django-check
+        name: django check
+        entry: uv run manage.py check
+        language: system
+        pass_filenames: false
+      - id: django-migrations
+        name: migrations pendentes
+        entry: uv run manage.py makemigrations --check
+        language: system
+        pass_filenames: false
+      - id: cobertura-testes
+        name: cobertura de testes (execução)
+        entry: uv run coverage run manage.py test --shuffle
+        language: system
+        pass_filenames: false
+      - id: cobertura-relatorio
+        name: cobertura de testes (relatório, mínimo 95%)
+        entry: uv run coverage report
+        language: system
+        pass_filenames: false

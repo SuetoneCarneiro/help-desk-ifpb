@@ -205,6 +205,9 @@ cython_debug/
 # Temporary file for partial code execution
 tempCodeRunnerFile.py
 
+# Gerado pelo hook uv-export-audit a partir do uv.lock
+requirements-audit.txt
+
 # Ruff stuff:
 .ruff_cache/
 
