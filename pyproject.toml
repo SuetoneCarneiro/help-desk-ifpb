@@ -1,0 +1,30 @@
+[project]
+name = "help-desk-ifpb"
+version = "0.1.0"
+description = "Sistema de Help Desk para o IFPB - Campus João Pessoa"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=5.2,<6.0",
+]
+
+[dependency-groups]
+dev = [
+    "coverage>=7.17.4",
+    "pre-commit>=4.7.0",
+    "ruff>=0.17.6",
+]
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.coverage.run]
+source = ["."]
+omit = [
+    "*/migrations/*", "*/tests/*", "manage.py",
+    "*/settings*", "*/wsgi.py", "*/asgi.py", "*/venv/*", ".venv/*",
+]
+
+[tool.coverage.report]
+fail_under = 95
+show_missing = true
