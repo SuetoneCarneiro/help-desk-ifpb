@@ -1,0 +1,144 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualidade:
+    name: Esteira, testes e cobertura
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Preparar Python
+        uses: actions/setup-python@v7
+        with:
+          python-version-file: .python-version
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Instalar dependências
+        run: uv sync --locked
+
+      - name: Cache dos ambientes do pre-commit
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml') }}
+
+      # A cobertura roda no passo seguinte, uma única vez, para gerar os relatórios publicados.
+      - name: pre-commit run --all-files
+        run: uv run pre-commit run --all-files --show-diff-on-failure
+        env:
+          SKIP: cobertura-testes,cobertura-relatorio
+
+      - name: Testes Django com cobertura
+        run: uv run coverage run manage.py test --shuffle
+
+      - name: Relatório de cobertura (mínimo 95%)
+        run: |
+          echo "## Cobertura de testes" >> "$GITHUB_STEP_SUMMARY"
+          uv run coverage report --format=markdown >> "$GITHUB_STEP_SUMMARY" || true
+          uv run coverage report
+
+      - name: Gerar relatórios HTML e XML
+        if: ${{ !cancelled() }}
+        run: |
+          [ -f .coverage ] || exit 0
+          uv run coverage html --fail-under=0
+          uv run coverage xml --fail-under=0
+
+      - name: Publicar cobertura como artefato
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: cobertura
+          path: |
+            htmlcov/
+            coverage.xml
+          if-no-files-found: ignore
+
+  commits:
+    name: Mensagens de commit (Conventional Commits)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Preparar Python
+        uses: actions/setup-python@v7
+        with:
+          python-version-file: .python-version
+
+      - name: Instalar uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+
+      - name: Instalar dependências
+        run: uv sync --locked
+
+      - name: Validar mensagens do push ou do pull request
+        env:
+          EVENTO: ${{ github.event_name }}
+          PR_BASE: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD: ${{ github.event.pull_request.head.sha }}
+          PUSH_ANTES: ${{ github.event.before }}
+          PUSH_DEPOIS: ${{ github.sha }}
+          BRANCH_PADRAO: ${{ github.event.repository.default_branch }}
+        run: |
+          set -euo pipefail
+
+          if [ "$EVENTO" = "pull_request" ]; then
+            intervalo="$PR_BASE..$PR_HEAD"
+          elif [ -n "$PUSH_ANTES" ] && [ "$PUSH_ANTES" != "0000000000000000000000000000000000000000" ] \
+               && git cat-file -e "$PUSH_ANTES^{commit}" 2>/dev/null; then
+            intervalo="$PUSH_ANTES..$PUSH_DEPOIS"
+          else
+            # Branch nova ou force push: valida o que ainda não está na branch padrão.
+            intervalo="origin/$BRANCH_PADRAO..$PUSH_DEPOIS"
+          fi
+
+          # Merge commits são gerados pelo GitHub ("Merge pull request #N ...") e ficam fora da convenção.
+          commits=$(git log --no-merges --format=%H "$intervalo")
+          echo "Intervalo: $intervalo"
+
+          if [ -z "$commits" ]; then
+            echo "Nenhum commit novo para validar."
+            exit 0
+          fi
+
+          echo "## Mensagens de commit" >> "$GITHUB_STEP_SUMMARY"
+          falhas=0
+          for sha in $commits; do
+            git log -1 --format=%B "$sha" > "$RUNNER_TEMP/msg.txt"
+            titulo=$(git log -1 --format=%s "$sha")
+            if uv run pre-commit run conventional-pre-commit \
+                 --hook-stage commit-msg \
+                 --commit-msg-filename "$RUNNER_TEMP/msg.txt" > "$RUNNER_TEMP/saida.txt" 2>&1; then
+              echo "OK     ${sha:0:7} $titulo"
+              echo "- :white_check_mark: \`${sha:0:7}\` $titulo" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "::error title=Commit fora do padrão::${sha:0:7} $titulo"
+              cat "$RUNNER_TEMP/saida.txt"
+              echo "- :x: \`${sha:0:7}\` $titulo" >> "$GITHUB_STEP_SUMMARY"
+              falhas=$((falhas + 1))
+            fi
+          done
+
+          if [ "$falhas" -gt 0 ]; then
+            echo "$falhas commit(s) fora do padrão Conventional Commits."
+            exit 1
+          fi

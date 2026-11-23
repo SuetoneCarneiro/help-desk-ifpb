@@ -247,3 +247,33 @@ O arquivo é gerado a cada execução e está no `.gitignore`; ele não é um `r
 
 **Por que a cobertura são dois hooks:** a especificação sugere `bash -c "... && ..."`, mas no Windows o `bash` do sistema costuma ser o do WSL, que roda fora do ambiente do uv.
 Separar em `coverage run` e `coverage report` mantém o mesmo efeito em Windows, Linux e macOS.
+
+## Pipeline (GitHub Actions)
+
+O workflow [`.github/workflows/ci.yml`](.github/workflows/ci.yml) roda a cada `push` (em qualquer branch) e a cada `pull_request`, com dois jobs:
+
+| Job | O que faz |
+| --- | --- |
+| **Esteira, testes e cobertura** | Instala Python e uv, roda `uv sync --locked`, `pre-commit run --all-files`, os testes com `coverage run manage.py test --shuffle` e o `coverage report` (falha abaixo de 95%) |
+| **Mensagens de commit** | Valida cada mensagem de commit recebida no push ou no PR com o hook `conventional-pre-commit` |
+
+No passo do pre-commit, os hooks `cobertura-testes` e `cobertura-relatorio` são pulados (`SKIP`) porque o passo seguinte roda exatamente os mesmos comandos uma única vez e gera os relatórios publicados.
+
+**Onde ver a cobertura:** na página da execução no GitHub (aba *Actions*), o *Summary* mostra a tabela de cobertura, e o artefato `cobertura` traz o relatório HTML (`htmlcov/`) e o `coverage.xml`.
+
+### Como o pipeline valida as mensagens de commit
+
+O `pre-commit run --all-files` não roda o hook do estágio `commit-msg`, porque no pipeline não existe mensagem sendo escrita.
+Por isso o job **Mensagens de commit** faz a validação à parte:
+
+1. Faz o checkout com o histórico completo (`fetch-depth: 0`).
+2. Define o intervalo de commits recebidos:
+   - em pull request: `base..head` do PR;
+   - em push: `before..after` do evento;
+   - em branch nova ou force push (quando o `before` não existe no histórico): `origin/main..after`, ou seja, tudo o que ainda não está na `main`.
+3. Lista os commits do intervalo com `git log --no-merges --format=%H <intervalo>`. Os merge commits ficam de fora porque são gerados pelo próprio GitHub ("Merge pull request #N ...").
+4. Para cada commit, grava a mensagem (`git log -1 --format=%B`) em um arquivo e o passa ao validador:
+   `uv run pre-commit run conventional-pre-commit --hook-stage commit-msg --commit-msg-filename <arquivo>`.
+5. Lista no *Summary* cada commit como aprovado ou recusado e faz o job falhar se ao menos uma mensagem estiver fora do padrão.
+
+Ao fazer merge de PR com **Squash and merge**, o título do PR vira a mensagem do commit; ele também precisa seguir o padrão `tipo: descrição`.
