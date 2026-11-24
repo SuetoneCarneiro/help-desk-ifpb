@@ -1,0 +1,34 @@
+# Registro de prompts
+
+Prompts usados com assistentes de IA que produziram algo que ficou no sistema (regra de negócio, modelo de dados, configuração da esteira, testes). Exigência da seção 13 da especificação.
+
+Formato de cada entrada:
+
+```
+## AAAA-MM-DD — <integrante> — <objetivo>
+
+Prompt:
+> texto do prompt
+
+Resultado: aceito como veio | aceito com ajustes — <quais> | descartado — <por quê>
+```
+
+---
+
+## 2026-11-24 — Suetone — plano de desenvolvimento e organização do uso de IA
+
+Ferramenta: Claude Code.
+
+Prompt:
+> Analise os arquivos [especificação do trabalho e proposta entregue] e faça um plano para desenvolvimento do projeto. Verifique as partes que falam sobre o uso de IA para que possamos organizar isso também. [...] verificar se há alguma task de infraestrutura que precisa ser feita antes de iniciar o backend.
+
+Resultado: <!-- preencher: aceito como veio / aceito com ajustes / descartado --> plano em `docs/plano-desenvolvimento-backend.md`; cards PL04–PL08 movidos para Concluído no Trello.
+
+## 2026-11-24 — Suetone — modelagem do banco (SU01)
+
+Ferramenta: Claude Code.
+
+Prompt:
+> [Front-end decidido: templates Django.] Modelar o banco conforme o card SU01 do Trello: usuário com papel, chamado/ordem de serviço, categorias, local, status, prioridade, técnico, motivo da recusa, descrição da solução, datas de abertura/atribuição/início/conclusão e prazo.
+
+Resultado: <!-- preencher: aceito como veio / aceito com ajustes / descartado --> apps `accounts` e `tickets`, migrations, admin, testes unitários e `docs/modelagem-banco.md`.
