@@ -1,6 +1,22 @@
 # help-desk-ifpb
 Sistema de Help Desk para o IFPB - Campus João Pessoa
 
+## Como rodar com Docker
+
+Pré-requisito: [Docker](https://docs.docker.com/get-docker/) com o Docker Compose.
+
+```bash
+docker compose up --build
+```
+
+| Serviço | Container | Porta | Endereço |
+| --- | --- | --- | --- |
+| Django | `helpdesk-ifpb-web` | 8000 | http://localhost:8000 |
+
+- As migrations rodam automaticamente na subida; não há nenhum passo manual.
+- O banco é SQLite, gravado em `/app/data/helpdesk.sqlite3` no volume `helpdesk-ifpb-dados`. Ele sobrevive a `docker compose down`; para começar do zero, use `docker compose down -v`.
+- Nenhuma variável de ambiente é obrigatória: o `docker-compose.yml` tem valores padrão. Para trocar algum, copie `.env.example` para `.env`.
+
 ## Configuração do ambiente de desenvolvimento
 
 Passo a passo que **todo integrante** executa uma vez na própria máquina.

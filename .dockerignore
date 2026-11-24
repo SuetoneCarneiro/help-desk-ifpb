@@ -1,0 +1,12 @@
+.git
+.github
+.venv
+__pycache__/
+*.pyc
+db.sqlite3
+.coverage
+htmlcov/
+coverage.xml
+requirements-audit.txt
+.env
+.ruff_cache/
