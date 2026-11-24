@@ -28,3 +28,7 @@ omit = [
 [tool.coverage.report]
 fail_under = 95
 show_missing = true
+
+[tool.ruff.lint]
+# Migrations são geradas pelo Django; o lint não deve barrar o arquivo gerado.
+exclude = ["*/migrations/*"]
