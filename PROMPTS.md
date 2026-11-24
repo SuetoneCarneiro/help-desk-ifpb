@@ -32,3 +32,13 @@ Prompt:
 > [Front-end decidido: templates Django.] Modelar o banco conforme o card SU01 do Trello: usuário com papel, chamado/ordem de serviço, categorias, local, status, prioridade, técnico, motivo da recusa, descrição da solução, datas de abertura/atribuição/início/conclusão e prazo.
 
 Resultado: <!-- preencher: aceito como veio / aceito com ajustes / descartado --> apps `accounts` e `tickets`, migrations, admin, testes unitários e `docs/modelagem-banco.md`.
+
+## 2026-11-24 — Suetone — autenticação e identificação dos papéis (SU02)
+
+Ferramenta: Claude Code.
+
+Prompt:
+> Prepare para a task SU02. É possível fazer ou há algum bloqueio? [...] pode implementar a SU02
+
+Resultado: aceito como veio 
+plano em `docs/plano-su02-autenticacao.md`; login/logout por sessão, painel por papel, `accounts/permissions.py` (`role_required`, `RoleRequiredMixin`), página 403 e testes unitários e de integração.

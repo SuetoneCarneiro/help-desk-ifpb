@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Help Desk IFPB{% endblock %}</title>
+</head>
+<body>
+  <header>
+    <strong>Help Desk IFPB</strong>
+    {% if user.is_authenticated %}
+      <span>{{ user.get_full_name|default:user.username }} ({{ user.get_role_display }})</span>
+      <form method="post" action="{% url 'accounts:logout' %}">
+        {% csrf_token %}
+        <button type="submit">Sair</button>
+      </form>
+    {% endif %}
+  </header>
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>
