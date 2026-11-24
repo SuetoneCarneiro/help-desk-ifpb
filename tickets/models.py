@@ -65,6 +65,23 @@ class TicketQuerySet(models.QuerySet):
         now = now or timezone.now()
         return self.technician_load().filter(due_at__lt=now)
 
+    def visible_to(self, user):
+        """Chamados que o usuário pode ver (SU03).
+
+        Coordenador vê todos; solicitante, os que abriu; técnico, os atribuídos
+        a ele. Anônimo ou papel desconhecido não vê nada. Precisa concordar com
+        ``tickets.policies.can_view_ticket``.
+        """
+        if not user.is_authenticated:
+            return self.none()
+        if user.is_coordenador:
+            return self.all()
+        if user.is_solicitante:
+            return self.filter(requester=user)
+        if user.is_tecnico:
+            return self.filter(technician=user)
+        return self.none()
+
 
 class Ticket(models.Model):
     """Chamado de TI. Depois de atribuído, é a ordem de serviço do técnico."""
