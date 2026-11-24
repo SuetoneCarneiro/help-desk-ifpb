@@ -42,3 +42,13 @@ Prompt:
 
 Resultado: aceito como veio 
 plano em `docs/plano-su02-autenticacao.md`; login/logout por sessão, painel por papel, `accounts/permissions.py` (`role_required`, `RoleRequiredMixin`), página 403 e testes unitários e de integração.
+
+## 2026-11-24 — Suetone — controle de acesso por papel (SU03)
+
+Ferramenta: Claude Code.
+
+Prompt:
+> Preparar para SU03. [...] Qual seriam as vantagens e desvantagens de fazer da maneira que você propôs? [...] pode implementar a SU03. Deixe no plano uma explicação simples para essa decisão
+
+Resultado: aceito com ajustes
+`tickets/policies.py` (funções `can_*` e `ensure`), `Ticket.objects.visible_to(user)`, testes da matriz papel × operação e plano com a explicação da decisão em `docs/plano-su03-permissoes.md`; convenção registrada no `CLAUDE.md`.
