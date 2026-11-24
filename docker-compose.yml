@@ -1,0 +1,21 @@
+name: helpdesk-ifpb
+
+services:
+  web:
+    build: .
+    image: helpdesk-ifpb
+    container_name: helpdesk-ifpb-web
+    ports:
+      - "8000:8000"
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-django-insecure-somente-para-avaliacao-local}
+      DJANGO_DEBUG: ${DJANGO_DEBUG:-True}
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:-localhost,127.0.0.1,0.0.0.0}
+      SQLITE_PATH: /app/data/helpdesk.sqlite3
+    volumes:
+      - helpdesk-ifpb-dados:/app/data
+    restart: unless-stopped
+
+volumes:
+  helpdesk-ifpb-dados:
+    name: helpdesk-ifpb-dados
