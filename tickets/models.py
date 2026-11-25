@@ -92,6 +92,8 @@ class Ticket(models.Model):
     ACTIVE_STATUSES = (Status.ABERTO, Status.ATRIBUIDO, Status.EM_ANDAMENTO)
     TECHNICIAN_LOAD_STATUSES = (Status.ATRIBUIDO, Status.EM_ANDAMENTO)
     CANCELLABLE_STATUSES = (Status.ABERTO, Status.ATRIBUIDO)
+    # US1: um solicitante não pode ter mais que isto em ACTIVE_STATUSES.
+    MAX_ACTIVE_PER_REQUESTER = 3
 
     DEADLINE_BY_PRIORITY = MappingProxyType(
         {

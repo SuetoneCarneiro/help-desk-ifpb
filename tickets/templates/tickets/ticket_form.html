@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% comment %}
+  Versão mínima do back-end (SU04). O PA04 troca HTML e CSS mantendo o contrato:
+  o form com os campos location, category e description; form.non_field_errors
+  traz a recusa da regra (limite de chamados ativos). A confirmação chega pelas
+  mensagens do base.html.
+{% endcomment %}
+
+{% block title %}Abrir chamado — Help Desk IFPB{% endblock %}
+
+{% block content %}
+  <h1>Abrir chamado</h1>
+  <form method="post" action="{% url 'tickets:create' %}">
+    {% csrf_token %}
+    {# form.as_p já mostra form.non_field_errors no topo. #}
+    {{ form.as_p }}
+    <button type="submit">Abrir chamado</button>
+  </form>
+  <p><a href="{% url 'accounts:home' %}">Voltar ao painel</a></p>
+{% endblock %}

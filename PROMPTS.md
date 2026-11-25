@@ -52,3 +52,14 @@ Prompt:
 
 Resultado: aceito com ajustes
 `tickets/policies.py` (funções `can_*` e `ensure`), `Ticket.objects.visible_to(user)`, testes da matriz papel × operação e plano com a explicação da decisão em `docs/plano-su03-permissoes.md`; convenção registrada no `CLAUDE.md`.
+
+## 2026-11-25 — Suetone — abertura de chamados (SU04)
+
+Ferramenta: Claude Code.
+
+Prompt:
+> Prepare para a SU04 [...] revisei. implemente [...] Só me explica resumidamente outra vez essa escola por serviços.py
+Esse arquivo centraliza as permissões("quem pode"), certo?
+
+Resultado: aceito como veio 
+primeiro `tickets/services.py` (`TicketRuleError`, `open_ticket` com o limite de 3 chamados ativos), formulário, view e template de abertura, mensagens no `base.html`, testes unitários e de integração, e plano em `docs/plano-su04-abertura.md`; padrão dos serviços registrado no `CLAUDE.md`.

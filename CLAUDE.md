@@ -26,6 +26,7 @@ Help Desk IFPB: chamados de TI de alunos e professores do campus João Pessoa, c
 - Identificadores em inglês; textos para o usuário (`verbose_name`, mensagens) em português.
 - **Regras de negócio e transições de status ficam em `tickets/services.py`**, nunca só na view ou no template — a mesma regra precisa valer para qualquer porta de entrada. As views só traduzem a exceção em mensagem.
 - **Quem pode** (autorização) fica em `tickets/policies.py` (`can_*`, `ensure`); **quando pode** (regra de negócio) fica em `tickets/services.py`. Listas e detalhes de chamado partem de `Ticket.objects.visible_to(user)`. A matriz de permissões está em `docs/plano-su03-permissoes.md`.
+- Cada serviço segue a ordem: `ensure(can_...)` (recusa → `PermissionDenied`, 403) → regra de negócio (recusa → `services.TicketRuleError`, que a view mostra com `form.add_error(None, ...)` ou `messages`) → grava. Modelo: `open_ticket` (SU04).
 - Constantes de status para as regras: `Ticket.ACTIVE_STATUSES`, `Ticket.TECHNICIAN_LOAD_STATUSES`, `Ticket.CANCELLABLE_STATUSES`.
 
 ## Comandos
