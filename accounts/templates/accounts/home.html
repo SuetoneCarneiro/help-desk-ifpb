@@ -5,6 +5,7 @@
   <p>Você entrou como <strong>{{ user.get_role_display }}</strong>.</p>
   {% if user.is_solicitante %}
     <p>Aqui você vai abrir e acompanhar os seus chamados.</p>
+    <p><a href="{% url 'tickets:create' %}">Abrir chamado</a></p>
   {% elif user.is_coordenador %}
     <p>Aqui você vai atribuir, priorizar e recusar chamados.</p>
   {% elif user.is_tecnico %}
