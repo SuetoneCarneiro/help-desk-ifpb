@@ -6,6 +6,7 @@
   {% if user.is_solicitante %}
     <p>Aqui você vai abrir e acompanhar os seus chamados.</p>
     <p><a href="{% url 'tickets:create' %}">Abrir chamado</a></p>
+    <p><a href="{% url 'tickets:list' %}">Meus chamados</a></p>
   {% elif user.is_coordenador %}
     <p>Aqui você vai atribuir, priorizar e recusar chamados.</p>
   {% elif user.is_tecnico %}

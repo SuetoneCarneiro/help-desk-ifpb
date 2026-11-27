@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% comment %}
+  Versão mínima do back-end (SU05). O PA05 troca HTML e CSS mantendo o contrato:
+  ticket, com os campos do model, get_status_display / get_priority_display e
+  is_overdue. Os botões de ação (cancelar, atribuir, iniciar, concluir) entram
+  aqui nos cards deles.
+{% endcomment %}
+
+{% block title %}Chamado #{{ ticket.pk }} — Help Desk IFPB{% endblock %}
+
+{% block content %}
+  <h1>Chamado #{{ ticket.pk }}</h1>
+
+  <dl>
+    <dt>Status</dt>
+    <dd>{{ ticket.get_status_display }}{% if ticket.is_overdue %} (atrasado){% endif %}</dd>
+    <dt>Solicitante</dt>
+    <dd>{{ ticket.requester.get_full_name|default:ticket.requester.username }}</dd>
+    <dt>Local</dt>
+    <dd>{{ ticket.location }}</dd>
+    <dt>Tipo de equipamento</dt>
+    <dd>{{ ticket.category }}</dd>
+    <dt>Descrição do problema</dt>
+    <dd>{{ ticket.description|linebreaksbr }}</dd>
+    <dt>Aberto em</dt>
+    <dd>{{ ticket.created_at|date:"d/m/Y H:i" }}</dd>
+    <dt>Prioridade</dt>
+    <dd>{{ ticket.get_priority_display|default:"—" }}</dd>
+    <dt>Técnico responsável</dt>
+    <dd>{% if ticket.technician %}{{ ticket.technician.get_full_name|default:ticket.technician.username }}{% else %}—{% endif %}</dd>
+    <dt>Prazo</dt>
+    <dd>{{ ticket.due_at|date:"d/m/Y H:i"|default:"—" }}</dd>
+    {% if ticket.started_at %}
+      <dt>Atendimento iniciado em</dt>
+      <dd>{{ ticket.started_at|date:"d/m/Y H:i" }}</dd>
+    {% endif %}
+    {% if ticket.completed_at %}
+      <dt>Concluído em</dt>
+      <dd>{{ ticket.completed_at|date:"d/m/Y H:i" }}</dd>
+    {% endif %}
+    {% if ticket.resolution %}
+      <dt>Descrição do atendimento</dt>
+      <dd>{{ ticket.resolution|linebreaksbr }}</dd>
+    {% endif %}
+    {% if ticket.canceled_at %}
+      <dt>Cancelado em</dt>
+      <dd>{{ ticket.canceled_at|date:"d/m/Y H:i" }}</dd>
+    {% endif %}
+    {% if ticket.refused_at %}
+      <dt>Recusado em</dt>
+      <dd>{{ ticket.refused_at|date:"d/m/Y H:i" }}</dd>
+    {% endif %}
+    {% if ticket.refusal_reason %}
+      <dt>Motivo da recusa</dt>
+      <dd>{{ ticket.refusal_reason|linebreaksbr }}</dd>
+    {% endif %}
+  </dl>
+
+  {% if user.is_solicitante %}
+    <p><a href="{% url 'tickets:list' %}">Voltar para meus chamados</a></p>
+  {% else %}
+    <p><a href="{% url 'accounts:home' %}">Voltar ao painel</a></p>
+  {% endif %}
+{% endblock %}
