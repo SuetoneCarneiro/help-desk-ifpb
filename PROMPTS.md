@@ -63,3 +63,13 @@ Esse arquivo centraliza as permissões("quem pode"), certo?
 
 Resultado: aceito como veio 
 primeiro `tickets/services.py` (`TicketRuleError`, `open_ticket` com o limite de 3 chamados ativos), formulário, view e template de abertura, mensagens no `base.html`, testes unitários e de integração, e plano em `docs/plano-su04-abertura.md`; padrão dos serviços registrado no `CLAUDE.md`.
+
+## 2026-11-27 — Suetone — consulta e acompanhamento dos próprios chamados (SU05)
+
+Ferramenta: Claude Code.
+
+Prompt:
+> prepare para SU05 [...] Sim, implementar
+
+Resultado: aceito como veio
+ lista "Meus chamados" (`MyTicketListView`) e detalhe (`TicketDetailView`) a partir do `visible_to`, com 404 para chamado alheio, paginação, `select_related`, templates mínimos, redirecionamento da abertura para o detalhe, testes de integração e plano em `docs/plano-su05-consulta.md`.
