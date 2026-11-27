@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% comment %}
+  Versão mínima do back-end (SU05). O PA05 troca HTML e CSS mantendo o contrato:
+  ticket_list (a página atual), page_obj e is_paginated; em cada ticket, os campos
+  do model e get_status_display / get_priority_display.
+{% endcomment %}
+
+{% block title %}Meus chamados — Help Desk IFPB{% endblock %}
+
+{% block content %}
+  <h1>Meus chamados</h1>
+  <p><a href="{% url 'tickets:create' %}">Abrir chamado</a></p>
+
+  {% if ticket_list %}
+    <table>
+      <thead>
+        <tr>
+          <th>Nº</th><th>Local</th><th>Tipo de equipamento</th><th>Status</th>
+          <th>Prioridade</th><th>Técnico</th><th>Prazo</th><th>Aberto em</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ticket in ticket_list %}
+          <tr>
+            <td><a href="{% url 'tickets:detail' ticket.pk %}">#{{ ticket.pk }}</a></td>
+            <td>{{ ticket.location }}</td>
+            <td>{{ ticket.category }}</td>
+            <td>{{ ticket.get_status_display }}</td>
+            <td>{{ ticket.get_priority_display|default:"—" }}</td>
+            <td>{% if ticket.technician %}{{ ticket.technician.get_full_name|default:ticket.technician.username }}{% else %}—{% endif %}</td>
+            <td>{{ ticket.due_at|date:"d/m/Y H:i"|default:"—" }}</td>
+            <td>{{ ticket.created_at|date:"d/m/Y H:i" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if is_paginated %}
+      <nav>
+        {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">Anterior</a>{% endif %}
+        Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+        {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">Próxima</a>{% endif %}
+      </nav>
+    {% endif %}
+  {% else %}
+    <p>Você ainda não abriu nenhum chamado.</p>
+  {% endif %}
+{% endblock %}

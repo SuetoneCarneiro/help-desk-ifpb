@@ -33,10 +33,10 @@ class AbrirChamadoTests(TestCase):
         self.assertTemplateUsed(response, "tickets/ticket_form.html")
         self.assertContains(response, self.local.name)
 
-    def test_envio_valido_cria_chamado_e_confirma_no_painel(self):
+    def test_envio_valido_cria_chamado_e_mostra_o_detalhe_com_confirmacao(self):
         response = self.client.post(self.url, self.dados(), follow=True)
         ticket = Ticket.objects.get()
-        self.assertRedirects(response, reverse("accounts:home"))
+        self.assertRedirects(response, reverse("tickets:detail", args=[ticket.pk]))
         self.assertContains(response, f"Chamado #{ticket.pk} aberto.")
         self.assertEqual(ticket.requester, self.ana)
         self.assertEqual(ticket.status, Ticket.Status.ABERTO)

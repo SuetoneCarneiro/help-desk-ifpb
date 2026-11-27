@@ -1,12 +1,15 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_http_methods
+from django.views.generic import DetailView, ListView
 
 from accounts.models import User
-from accounts.permissions import role_required
+from accounts.permissions import RoleRequiredMixin, role_required
 
 from . import services
 from .forms import TicketOpenForm
+from .models import Ticket
 
 
 @require_http_methods(["GET", "POST"])
@@ -21,5 +24,31 @@ def ticket_create(request):
             form.add_error(None, str(error))
         else:
             messages.success(request, f"Chamado #{ticket.pk} aberto.")
-            return redirect("accounts:home")
+            return redirect("tickets:detail", pk=ticket.pk)
     return render(request, "tickets/ticket_form.html", {"form": form})
+
+
+class VisibleTicketsMixin:
+    """Toda consulta de chamado parte do que o usuário enxerga (SU03)."""
+
+    def get_queryset(self):
+        return Ticket.objects.visible_to(self.request.user).select_related(
+            "location", "category", "technician", "requester"
+        )
+
+
+class MyTicketListView(RoleRequiredMixin, VisibleTicketsMixin, ListView):
+    """US2: "Meus chamados" do solicitante, do mais novo para o mais antigo.
+
+    A consulta geral do coordenador é a SU09 e as ordens do técnico, a SU11.
+    """
+
+    allowed_roles = (User.Role.SOLICITANTE,)
+    paginate_by = 20
+
+
+class TicketDetailView(LoginRequiredMixin, VisibleTicketsMixin, DetailView):
+    """Detalhe de um chamado, para qualquer papel.
+
+    Chamado fora do ``visible_to`` do usuário dá 404: não revela que ele existe.
+    """
