@@ -1,0 +1,13 @@
+<dialog class="modal" id="{{ modal_id }}" aria-labelledby="{{ modal_id }}-title">
+  <div class="modal-body">
+    <h2 id="{{ modal_id }}-title">{{ title }}</h2>
+    {% if body_template %}
+      {% include body_template %}
+    {% else %}
+      <p>{{ text }}</p>
+    {% endif %}
+    <form method="dialog">
+      <button class="button button-secondary" type="submit">Fechar</button>
+    </form>
+  </div>
+</dialog>

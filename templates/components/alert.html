@@ -1,0 +1,4 @@
+<div class="alert alert-{{ level|default:'info' }}"
+     {% if level == 'error' %}role="alert"{% else %}role="status"{% endif %}>
+  {{ text }}
+</div>

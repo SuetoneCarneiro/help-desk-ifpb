@@ -14,7 +14,7 @@
 
   <dl>
     <dt>Status</dt>
-    <dd>{{ ticket.get_status_display }}{% if ticket.is_overdue %} (atrasado){% endif %}</dd>
+    <dd>{% include "components/status.html" with ticket=ticket only %}</dd>
     <dt>Solicitante</dt>
     <dd>{{ ticket.requester.get_full_name|default:ticket.requester.username }}</dd>
     <dt>Local</dt>
