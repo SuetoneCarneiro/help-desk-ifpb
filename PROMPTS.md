@@ -73,3 +73,17 @@ Prompt:
 
 Resultado: aceito como veio
  lista "Meus chamados" (`MyTicketListView`) e detalhe (`TicketDetailView`) a partir do `visible_to`, com 404 para chamado alheio, paginação, `select_related`, templates mínimos, redirecionamento da abertura para o detalhe, testes de integração e plano em `docs/plano-su05-consulta.md`.
+
+## 2026-11-28 — Pedro Arthur de Holanda Nery — Estrutura visual da PA01
+
+Prompt (resumo):
+> Criar a base do frontend com templates Django, identidade visual verde,
+> navegação por papel, menu responsivo e componentes reutilizáveis.
+> Fornecer os comandos via cat para aplicar no repositório.
+
+Resultado: aceito com ajustes. O painel preservou o destaque do papel do
+usuário, o indicador de atraso manteve o texto esperado pela suíte e as
+URLs de integração passaram a incluir os destinos do menu. Conferi no
+navegador o painel do solicitante, o menu móvel, o formulário de abertura
+e a listagem vazia. Os 87 testes passaram com --shuffle, a cobertura do
+Python ficou em 100% e a esteira local passou.
