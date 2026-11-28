@@ -1,0 +1,6 @@
+<span class="status" data-status="{{ ticket.get_status_display|slugify }}">
+  {{ ticket.get_status_display }}
+</span>
+{% if ticket.is_overdue %}
+  <span class="status" data-status="atrasado">(atrasado)</span>
+{% endif %}

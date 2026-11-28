@@ -1,15 +1,35 @@
 {% extends "base.html" %}
 
+{% block title %}Painel — Help Desk IFPB{% endblock %}
+
 {% block content %}
-  <h1>Painel</h1>
-  <p>Você entrou como <strong>{{ user.get_role_display }}</strong>.</p>
+  <header class="page-header">
+    <h1>Painel</h1>
+    <p><strong>{{ user.get_role_display }}</strong> · Campus João Pessoa</p>
+  </header>
+
   {% if user.is_solicitante %}
-    <p>Aqui você vai abrir e acompanhar os seus chamados.</p>
-    <p><a href="{% url 'tickets:create' %}">Abrir chamado</a></p>
-    <p><a href="{% url 'tickets:list' %}">Meus chamados</a></p>
+    <div class="card-grid">
+      <section class="card">
+        <h2>Abrir chamado</h2>
+        <p>Informe o local, o equipamento e o problema que precisa de atendimento.</p>
+        <a class="button" href="{% url 'tickets:create' %}">Abrir chamado</a>
+      </section>
+      <section class="card">
+        <h2>Meus chamados</h2>
+        <p>Acompanhe a situação de cada solicitação e consulte os detalhes do atendimento.</p>
+        <a class="button button-secondary" href="{% url 'tickets:list' %}">Ver meus chamados</a>
+      </section>
+    </div>
   {% elif user.is_coordenador %}
-    <p>Aqui você vai atribuir, priorizar e recusar chamados.</p>
+    <section class="card">
+      <h2>Coordenação de TI</h2>
+      <p>Seu papel é fazer a triagem dos chamados, definir prioridades e distribuir as ordens entre os técnicos.</p>
+    </section>
   {% elif user.is_tecnico %}
-    <p>Aqui você vai atender as ordens de serviço atribuídas a você.</p>
+    <section class="card">
+      <h2>Atendimento técnico</h2>
+      <p>Seu papel é atender as ordens atribuídas a você e registrar como cada problema foi resolvido.</p>
+    </section>
   {% endif %}
 {% endblock %}

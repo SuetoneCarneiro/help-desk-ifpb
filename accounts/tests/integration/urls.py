@@ -20,5 +20,6 @@ def criar_local(request):
 
 urlpatterns = [
     path("", include("accounts.urls")),
+    path("", include("tickets.urls")),
     path("teste/criar-local/", criar_local, name="criar-local"),
 ]

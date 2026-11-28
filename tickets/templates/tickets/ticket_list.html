@@ -13,6 +13,7 @@
   <p><a href="{% url 'tickets:create' %}">Abrir chamado</a></p>
 
   {% if ticket_list %}
+    <div class="table-scroll" role="region" aria-label="Meus chamados" tabindex="0">
     <table>
       <thead>
         <tr>
@@ -26,7 +27,7 @@
             <td><a href="{% url 'tickets:detail' ticket.pk %}">#{{ ticket.pk }}</a></td>
             <td>{{ ticket.location }}</td>
             <td>{{ ticket.category }}</td>
-            <td>{{ ticket.get_status_display }}</td>
+            <td>{% include "components/status.html" with ticket=ticket only %}</td>
             <td>{{ ticket.get_priority_display|default:"—" }}</td>
             <td>{% if ticket.technician %}{{ ticket.technician.get_full_name|default:ticket.technician.username }}{% else %}—{% endif %}</td>
             <td>{{ ticket.due_at|date:"d/m/Y H:i"|default:"—" }}</td>
@@ -35,6 +36,7 @@
         {% endfor %}
       </tbody>
     </table>
+    </div>
 
     {% if is_paginated %}
       <nav>

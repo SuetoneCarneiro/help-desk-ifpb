@@ -1,0 +1,18 @@
+<nav class="navigation" aria-label="Navegação principal">
+  {% with current=request.resolver_match.view_name %}
+    <a href="{% url 'accounts:home' %}"
+       {% if current == 'accounts:home' %}aria-current="page"{% endif %}>
+      Painel
+    </a>
+    {% if user.is_solicitante %}
+      <a href="{% url 'tickets:list' %}"
+         {% if current == 'tickets:list' %}aria-current="page"{% endif %}>
+        Meus chamados
+      </a>
+      <a href="{% url 'tickets:create' %}"
+         {% if current == 'tickets:create' %}aria-current="page"{% endif %}>
+        Abrir chamado
+      </a>
+    {% endif %}
+  {% endwith %}
+</nav>
